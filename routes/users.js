@@ -26,7 +26,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone, type } = req.body;
 
     try {
       // Test if email already exists in DB
@@ -39,6 +39,7 @@ router.post(
         email,
         password,
         phone,
+        type,
       });
 
       // Encrypt password
@@ -51,6 +52,7 @@ router.post(
       const payload = {
         user: {
           id: user.id,
+          type: user.type,
         },
       };
 

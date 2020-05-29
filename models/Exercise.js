@@ -21,6 +21,9 @@ const ExerciseSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'users',
   },
+  type: {
+    type: String,
+  },
   date: {
     type: Date,
     default: Date.now,

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 module.exports = async (req, res, next) => {
   // Get token from header
@@ -11,11 +11,13 @@ module.exports = async (req, res, next) => {
 
   try {
     // Test the token to see if it is correct
-    const isMatch = await bcrypt.compare(token, process.env.ADMIN_TOKEN);
-    if (!isMatch) return res.status(403).json({ msg: 'Access denied!' });
-
-    next();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.user.type === 'admin') {
+      next();
+    } else {
+      res.status(401).json({ msg: 'Token is invalid' });
+    }
   } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
+    res.status(401).json({ msg: 'Token is invalid catch' });
   }
 };
