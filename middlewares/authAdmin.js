@@ -18,6 +18,6 @@ module.exports = async (req, res, next) => {
       res.status(401).json({ msg: 'Token is invalid' });
     }
   } catch (err) {
-    res.status(401).json({ msg: 'Token is invalid catch' });
+    res.status(401).json({ msg: 'Token is invalid' });
   }
 };
