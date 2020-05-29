@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 // @acces     Private
 router.post('/', authAdmin, async (req, res) => {
   try {
-    const { title, desc, trainer, duration, date } = req.body;
+    const { title, desc, trainer, duration, date, type } = req.body;
 
     // Create exercise
     const exercise = new Exercise({
@@ -31,6 +31,7 @@ router.post('/', authAdmin, async (req, res) => {
       trainer,
       duration,
       date,
+      type,
     });
 
     // Save exercise to database
@@ -48,14 +49,70 @@ router.post('/', authAdmin, async (req, res) => {
 // @acces     Private
 router.put('/:id', auth, async (req, res) => {
   try {
-    // Get exercise to edit and update it
-    const exercise = await Exercise.findByIdAndUpdate(
-      { _id: req.params.id },
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const userType = req.user.type;
+    const exercise = await Exercise.findById({ _id: req.params.id });
 
-    res.json(exercise);
+    switch (exercise.type) {
+      case 'standard':
+        switch (userType) {
+          case 'standard':
+            if (exercise.enrolled.some((id) => id === req.user.id)) {
+              exercise.enrolled = exercise.enrolled.filter(
+                (id) => id !== req.user.id
+              );
+            } else {
+              exercise.enrolled.push(req.user.id);
+            }
+            await exercise.save();
+            res.status(200).json({ msg: 'Success' });
+            break;
+          case 'premium':
+            if (exercise.enrolled.some((id) => id === req.user.id)) {
+              exercise.enrolled = exercise.enrolled.filter(
+                (id) => id !== req.user.id
+              );
+            } else {
+              exercise.enrolled.push(req.user.id);
+            }
+            await exercise.save();
+            res.status(200).json({ msg: 'Success' });
+            break;
+          case 'admin':
+            await exercise.update({ $set: req.body });
+            res.status(200).json({ msg: 'Success' });
+            break;
+          default:
+            res.status(403).send('Acces denied standard');
+            break;
+        }
+        break;
+      case 'premium':
+        switch (userType) {
+          case 'premium':
+            if (exercise.enrolled.some((id) => id === req.user.id)) {
+              exercise.enrolled = exercise.enrolled.filter(
+                (id) => id !== req.user.id
+              );
+            } else {
+              exercise.enrolled.push(req.user.id);
+            }
+            await exercise.save();
+            res.status(200).json({ msg: 'Success' });
+            break;
+          case 'admin':
+            await exercise.update({ $set: req.body });
+            res.status(200).json({ msg: 'Success' });
+            break;
+          default:
+            res.status(403).send('Acces denied premium');
+            break;
+        }
+        break;
+
+      default:
+        res.status(500).send('Server Error');
+        break;
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

@@ -18,8 +18,7 @@ const ExerciseSchema = mongoose.Schema({
     required: true,
   },
   enrolled: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'users',
+    type: Array,
   },
   type: {
     type: String,
