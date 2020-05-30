@@ -3,7 +3,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
-const auth = require('../middlewares/auth');
+const authAdmin = require('../middlewares/authAdmin');
 
 const User = require('../models/User');
 
@@ -81,7 +81,7 @@ router.post(
 // @route     POST api/users/:id
 // @desc      Check if membership is valid
 // @acces     Private
-router.post('/:id', async (req, res) => {
+router.post('/:id', authAdmin, async (req, res) => {
   try {
     const date = new Date();
     const user = await User.find({ _id: req.params.id }).select('date_expires');
