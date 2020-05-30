@@ -27,7 +27,7 @@ export const LoginState = ({ children }) => {
     }
   };
 
-  const handleLogin = async (email, password) => {
+  const handleLogin = async (user) => {
     try {
       const config = {
         headers: {
@@ -35,7 +35,7 @@ export const LoginState = ({ children }) => {
         },
       };
 
-      const res = await axios.post('/api/login', { email, password }, config);
+      const res = await axios.post('/api/login', user, config);
 
       setIsLogged(true);
       localStorage.setItem('token', res.data.token);

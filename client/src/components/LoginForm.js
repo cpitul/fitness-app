@@ -13,16 +13,22 @@ const LoginForm = () => {
 
   const { email, password } = user;
 
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  // Log in
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user.email || !user.password) {
+    // Test if email and password are entered
+    if (!email || !password) {
       setAlert(true);
       setTimeout(() => setAlert(false), 1500);
       return;
     }
-
+    // Send email and password for loging in to the server
     try {
-      const err = await handleLogin(user.email, user.password);
+      const err = await handleLogin(user);
       if (err) {
         setAlert(true);
         setTimeout(() => setAlert(false), 1500);
@@ -45,7 +51,7 @@ const LoginForm = () => {
           name='email'
           className='input-field'
           value={email}
-          onChange={(e) => setUser({ email: e.target.value })}
+          onChange={handleChange}
         />
         <label htmlFor='password'>Password</label>
         <input
@@ -53,7 +59,7 @@ const LoginForm = () => {
           name='password'
           className='input-field'
           value={password}
-          onChange={(e) => setUser({ password: e.target.value })}
+          onChange={handleChange}
         />
         <input type='submit' className='btn' value='Log In' />
       </form>
