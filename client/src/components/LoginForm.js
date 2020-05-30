@@ -33,6 +33,7 @@ const LoginForm = () => {
         setAlert(true);
         setTimeout(() => setAlert(false), 1500);
       }
+      setUser({ ...user, email: '', password: '' });
     } catch (err) {
       console.error(err.message);
     }

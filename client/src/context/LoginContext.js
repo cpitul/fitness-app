@@ -6,10 +6,13 @@ export const LoginContext = createContext();
 export const LoginState = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [activeUser, setActiveUser] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const toggleIsLogged = (bool) => setIsLogged(bool);
 
   const toggleActiveUser = (user) => setActiveUser(user);
+
+  const toggleLoading = (bool) => setLoading(bool);
 
   const getLoggedUser = async (token) => {
     const config = {
@@ -45,14 +48,23 @@ export const LoginState = ({ children }) => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLogged(false);
+    setActiveUser({});
+  };
+
   return (
     <LoginContext.Provider
       value={{
         isLogged,
         activeUser,
+        loading,
+        toggleLoading,
         toggleIsLogged,
         toggleActiveUser,
         handleLogin,
+        handleLogout,
         getLoggedUser,
       }}
     >
