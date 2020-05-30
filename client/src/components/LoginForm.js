@@ -3,22 +3,26 @@ import Alert from '../components/Alert';
 import { LoginContext } from '../context/LoginContext';
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [user, setUser] = useState({
+    email: '',
+    password: '',
+  });
   const [alert, setAlert] = useState(false);
 
   const { handleLogin } = useContext(LoginContext);
 
+  const { email, password } = user;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
+    if (!user.email || !user.password) {
       setAlert(true);
       setTimeout(() => setAlert(false), 1500);
       return;
     }
 
     try {
-      const err = await handleLogin(email, password);
+      const err = await handleLogin(user.email, user.password);
       if (err) {
         setAlert(true);
         setTimeout(() => setAlert(false), 1500);
@@ -41,7 +45,7 @@ const LoginForm = () => {
           name='email'
           className='input-field'
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setUser({ email: e.target.value })}
         />
         <label htmlFor='password'>Password</label>
         <input
@@ -49,7 +53,7 @@ const LoginForm = () => {
           name='password'
           className='input-field'
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setUser({ password: e.target.value })}
         />
         <input type='submit' className='btn' value='Log In' />
       </form>
