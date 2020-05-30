@@ -21,8 +21,11 @@ const UserSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  date_expires: {
-    type: Date,
+  membership_created: {
+    type: String,
+  },
+  membership_expires: {
+    type: String,
   },
   type: {
     type: String,

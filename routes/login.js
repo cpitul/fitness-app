@@ -51,7 +51,7 @@ router.post(
         user: {
           id: user.id,
           type: user.type,
-          date_expires: user.date_expires,
+          membership_expires: user.membership_expires,
         },
       };
 

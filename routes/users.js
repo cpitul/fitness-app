@@ -50,7 +50,8 @@ router.post(
         phone,
         type,
         date_created,
-        date_expires,
+        membership_created,
+        membership_expires,
       });
 
       // Encrypt password
@@ -64,6 +65,7 @@ router.post(
         user: {
           id: user.id,
           type: user.type,
+          membership_expires: user.membership_expires,
         },
       };
 
@@ -84,8 +86,14 @@ router.post(
 router.post('/:id', authAdmin, async (req, res) => {
   try {
     const date = new Date();
-    const user = await User.find({ _id: req.params.id }).select('date_expires');
-    const expires = new Date(user[0].date_expires);
+    const user = await User.find({ _id: req.params.id }).select(
+      'membership_expires'
+    );
+
+    if (!user[0].membership_expires)
+      return res.status(400).send('No membership active');
+
+    const expires = new Date(user[0].membership_expires);
 
     const dif = expires.getUTCMonth() - date.getUTCMonth();
 
