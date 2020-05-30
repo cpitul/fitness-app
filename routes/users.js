@@ -91,7 +91,7 @@ router.post('/:id', authAdmin, async (req, res) => {
     );
 
     if (!user[0].membership_expires)
-      return res.status(400).send('No membership active');
+      return res.status(404).send('No membership active');
 
     const expires = new Date(user[0].membership_expires);
 
@@ -108,7 +108,7 @@ router.post('/:id', authAdmin, async (req, res) => {
     }
   } catch (err) {
     console.error(err.message);
-    res.status(400).send('No user found');
+    res.status(404).send('No user found');
   }
 });
 

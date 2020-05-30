@@ -57,7 +57,7 @@ router.post(
 
       jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.status(200).json({ token });
       });
     } catch (err) {
       console.error(err.message);
