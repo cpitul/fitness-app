@@ -17,9 +17,12 @@ const UserSchema = mongoose.Schema({
   phone: {
     type: String,
   },
-  date: {
+  date_created: {
     type: Date,
     default: Date.now,
+  },
+  date_expires: {
+    type: Date,
   },
   type: {
     type: String,

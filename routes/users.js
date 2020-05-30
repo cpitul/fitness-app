@@ -3,6 +3,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
+const auth = require('../middlewares/auth');
 
 const User = require('../models/User');
 
@@ -26,7 +27,15 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, phone, type } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      type,
+      date_created,
+      date_expires,
+    } = req.body;
 
     try {
       // Test if email already exists in DB
@@ -40,6 +49,8 @@ router.post(
         password,
         phone,
         type,
+        date_created,
+        date_expires,
       });
 
       // Encrypt password
@@ -66,5 +77,31 @@ router.post(
     }
   }
 );
+
+// @route     POST api/users/:id
+// @desc      Check if membership is valid
+// @acces     Private
+router.post('/:id', async (req, res) => {
+  try {
+    const date = new Date();
+    const user = await User.find({ _id: req.params.id }).select('date_expires');
+    const expires = new Date(user[0].date_expires);
+
+    const dif = expires.getUTCMonth() - date.getUTCMonth();
+
+    if (dif < 0) {
+      return res.status(401).send('Expired');
+    } else if (dif === 0) {
+      expires.getUTCDate() - date.getUTCDate() >= 0
+        ? res.status(200).send('Valid')
+        : res.status(401).send('Expired');
+    } else {
+      return res.status(200).send('Valid');
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(400).send('No user found');
+  }
+});
 
 module.exports = router;
