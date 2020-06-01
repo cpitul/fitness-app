@@ -80,35 +80,49 @@ router.post(
   }
 );
 
-// @route     POST api/users/:id
-// @desc      Check if membership is valid
+// @route     POST api/users/memberships
+// @desc      Update expired memberships
 // @acces     Private
-router.post('/:id', authAdmin, async (req, res) => {
+router.post('/memberships', authAdmin, async (req, res) => {
   try {
-    const date = new Date();
-    const user = await User.find({ _id: req.params.id }).select(
-      'membership_expires'
-    );
+    const users = await User.find().select('membership_expires').select('type');
 
-    if (!user[0].membership_expires)
-      return res.status(404).send('No membership active');
+    const memberships = users.filter((user) => user.membership_expires);
 
-    const expires = new Date(user[0].membership_expires);
+    if (!memberships) return res.status(404).send('No memberships active');
 
-    const dif = expires.getUTCMonth() - date.getUTCMonth();
+    memberships.map(async (membership) => {
+      const date = new Date();
+      const expires = new Date(membership.membership_expires);
+      const dif = expires.getUTCMonth() - (date.getUTCMonth() - 1);
 
-    if (dif < 0) {
-      return res.status(401).send('Expired');
-    } else if (dif === 0) {
-      expires.getUTCDate() - date.getUTCDate() >= 0
-        ? res.status(200).send('Valid')
-        : res.status(401).send('Expired');
-    } else {
-      return res.status(200).send('Valid');
-    }
+      if (dif < 0) {
+        // Membership is expired
+        await membership.updateOne({
+          $set: {
+            type: 'free',
+            membership_created: '',
+            membership_expires: '',
+          },
+        });
+      } else if (dif === 0) {
+        // Test if there are days left of membership
+        if (expires.getUTCDate() - date.getUTCDate() < 0) {
+          // No days left in the membership
+          await membership.updateOne({
+            $set: {
+              type: 'free',
+              membership_created: '',
+              membership_expires: '',
+            },
+          });
+        }
+      }
+    });
+    res.status(200).send('Success');
   } catch (err) {
     console.error(err.message);
-    res.status(404).send('No user found');
+    res.status(500).send('Server Error');
   }
 });
 
