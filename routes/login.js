@@ -52,6 +52,9 @@ router.post(
           id: user.id,
           type: user.type,
           membership_expires: user.membership_expires,
+          penalties: user.penalties,
+          services: user.services,
+          enrolled: user.enrolled,
         },
       };
 

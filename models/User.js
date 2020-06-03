@@ -17,6 +17,7 @@ const UserSchema = mongoose.Schema({
   },
   phone: {
     type: String,
+    required: true,
   },
   date_created: {
     type: Date,
@@ -32,6 +33,20 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true,
     default: 'free',
+  },
+  // services is an array of objects that has
+  // type (PT or VR) and tokens available (ex: 10)
+  services: {
+    type: Array,
+    default: [],
+  },
+  panalties: {
+    type: Number,
+    default: 0,
+  },
+  enrolled: {
+    type: Array,
+    default: [],
   },
 });
 

@@ -3,13 +3,13 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
-const authAdmin = require('../middlewares/authAdmin');
+const authDesk = require('../middlewares/authDesk');
 
 const User = require('../models/User');
 
 // @route     POST api/users
 // @desc      Register user
-// @acces     Public
+// @acces     Private
 router.post(
   '/',
   [
@@ -19,6 +19,7 @@ router.post(
       'password',
       'Please enter a password with 6 or more characters'
     ).isLength({ min: 6 }),
+    authDesk,
   ],
   async (req, res) => {
     // Check for errors after the validation
@@ -34,7 +35,8 @@ router.post(
       phone,
       type,
       date_created,
-      date_expires,
+      membership_created,
+      membership_expires,
     } = req.body;
 
     try {
@@ -66,6 +68,9 @@ router.post(
           id: user.id,
           type: user.type,
           membership_expires: user.membership_expires,
+          penalties: user.penalties,
+          services: user.services,
+          enrolled: user.enrolled,
         },
       };
 
@@ -83,7 +88,7 @@ router.post(
 // @route     POST api/users/memberships
 // @desc      Update expired memberships
 // @acces     Private
-router.post('/memberships', authAdmin, async (req, res) => {
+router.post('/memberships', authDesk, async (req, res) => {
   try {
     const users = await User.find().select('membership_expires').select('type');
 

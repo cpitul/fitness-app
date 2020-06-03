@@ -12,6 +12,7 @@ module.exports = async (req, res, next) => {
     // Decode the token to see what user made the request
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // Set the user that made the request into req.user
+
     req.user = decoded.user;
 
     next();

@@ -19,9 +19,11 @@ const ClassSchema = mongoose.Schema({
   },
   enrolled: {
     type: Array,
+    default: [],
   },
   attended: {
     type: Array,
+    default: [],
   },
   type: {
     type: String,
@@ -34,6 +36,10 @@ const ClassSchema = mongoose.Schema({
   time: {
     type: String,
     required: true,
+  },
+  giveups: {
+    type: Number,
+    default: 0,
   },
 });
 
