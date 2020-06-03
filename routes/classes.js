@@ -2,30 +2,30 @@ const router = require('express').Router();
 const authAdmin = require('../middlewares/authAdmin');
 const auth = require('../middlewares/auth');
 
-const Exercise = require('../models/Exercise');
+const Class = require('../models/Class');
 
-// @route     GET api/exercises
-// @desc      Get all exercises
+// @route     GET api/classes
+// @desc      Get all classes
 // @acces     Public
 router.get('/', async (req, res) => {
   try {
-    const exercises = await Exercise.find();
-    res.json(exercises);
+    const classes = await Class.find();
+    res.json(classes);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: 'Server Error' });
   }
 });
 
-// @route     POST api/exercises
-// @desc      Create exercise
+// @route     POST api/classes
+// @desc      Create class
 // @acces     Private
 router.post('/', authAdmin, async (req, res) => {
   try {
     const { title, desc, trainer, duration, date, type } = req.body;
 
-    // Create exercise
-    const exercise = new Exercise({
+    // Create class
+    const newClass = new Class({
       title,
       desc,
       trainer,
@@ -34,51 +34,51 @@ router.post('/', authAdmin, async (req, res) => {
       type,
     });
 
-    // Save exercise to database
-    await exercise.save();
+    // Save class to database
+    await newClass.save();
 
-    res.json(exercise);
+    res.json(newClass);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
 
-// @route     PUT api/exercises
-// @desc      Edit an existing exercise
+// @route     PUT api/classes/:id
+// @desc      Edit an existing class
 // @acces     Private
 router.put('/:id', auth, async (req, res) => {
   try {
     const userType = req.user.type;
-    const exercise = await Exercise.findById({ _id: req.params.id });
+    const classToEdit = await Class.findById({ _id: req.params.id });
 
-    switch (exercise.type) {
+    switch (classToEdit.type) {
       case 'standard':
         switch (userType) {
           case 'standard':
-            if (exercise.enrolled.some((id) => id === req.user.id)) {
-              exercise.enrolled = exercise.enrolled.filter(
+            if (classToEdit.enrolled.some((id) => id === req.user.id)) {
+              classToEdit.enrolled = classToEdit.enrolled.filter(
                 (id) => id !== req.user.id
               );
             } else {
-              exercise.enrolled.push(req.user.id);
+              classToEdit.enrolled.push(req.user.id);
             }
-            await exercise.save();
+            await classToEdit.save();
             res.status(200).json({ msg: 'Success' });
             break;
           case 'premium':
-            if (exercise.enrolled.some((id) => id === req.user.id)) {
-              exercise.enrolled = exercise.enrolled.filter(
+            if (classToEdit.enrolled.some((id) => id === req.user.id)) {
+              classToEdit.enrolled = classToEdit.enrolled.filter(
                 (id) => id !== req.user.id
               );
             } else {
-              exercise.enrolled.push(req.user.id);
+              classToEdit.enrolled.push(req.user.id);
             }
-            await exercise.save();
+            await classToEdit.save();
             res.status(200).json({ msg: 'Success' });
             break;
           case 'admin':
-            await exercise.update({ $set: req.body });
+            await classToEdit.update({ $set: req.body });
             res.status(200).json({ msg: 'Success' });
             break;
           default:
@@ -89,18 +89,18 @@ router.put('/:id', auth, async (req, res) => {
       case 'premium':
         switch (userType) {
           case 'premium':
-            if (exercise.enrolled.some((id) => id === req.user.id)) {
-              exercise.enrolled = exercise.enrolled.filter(
+            if (classToEdit.enrolled.some((id) => id === req.user.id)) {
+              classToEdit.enrolled = classToEdit.enrolled.filter(
                 (id) => id !== req.user.id
               );
             } else {
-              exercise.enrolled.push(req.user.id);
+              classToEdit.enrolled.push(req.user.id);
             }
-            await exercise.save();
+            await classToEdit.save();
             res.status(200).json({ msg: 'Success' });
             break;
           case 'admin':
-            await exercise.update({ $set: req.body });
+            await classToEdit.update({ $set: req.body });
             res.status(200).json({ msg: 'Success' });
             break;
           default:
@@ -119,12 +119,12 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// @route     DELETE api/exercises/:id
-// @desc      Delete exercise
+// @route     DELETE api/classes/:id
+// @desc      Delete class
 // @acces     Private
 router.delete('/:id', authAdmin, async (req, res) => {
   try {
-    await Exercise.findOneAndDelete({ _id: req.params.id });
+    await Class.findOneAndDelete({ _id: req.params.id });
     res.status(200).json({ msg: 'Success' });
   } catch (err) {
     console.error(err.message);

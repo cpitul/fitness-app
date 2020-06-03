@@ -9,7 +9,7 @@ connectDB();
 
 // Middlewares
 app.use(express.json({ extended: false }));
-app.use('/api/exercises', require('./routes/exercises'));
+app.use('/api/classes', require('./routes/classes'));
 app.use('/api/login', require('./routes/login'));
 app.use('/api/users', require('./routes/users'));
 

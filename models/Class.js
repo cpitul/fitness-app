@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const ExerciseSchema = mongoose.Schema({
+const ClassSchema = mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -20,13 +20,21 @@ const ExerciseSchema = mongoose.Schema({
   enrolled: {
     type: Array,
   },
+  attended: {
+    type: Array,
+  },
   type: {
     type: String,
+    default: 'regular',
   },
   date: {
     type: Date,
-    default: Date.now,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
   },
 });
 
-module.exports = mongoose.model('exercise', ExerciseSchema);
+module.exports = mongoose.model('class', ClassSchema);
