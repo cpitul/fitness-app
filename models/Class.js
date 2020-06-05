@@ -30,7 +30,7 @@ const ClassSchema = mongoose.Schema({
     default: 'regular',
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   time: {
@@ -40,6 +40,10 @@ const ClassSchema = mongoose.Schema({
   giveups: {
     type: Number,
     default: 0,
+  },
+  max: {
+    type: Number,
+    required: true,
   },
 });
 

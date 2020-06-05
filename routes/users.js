@@ -7,6 +7,34 @@ const authDesk = require('../middlewares/authDesk');
 
 const User = require('../models/User');
 
+// @route     GET api/users
+// @desc      Get all users or get a specific user
+// @acces     Private
+router.get('/', authDesk, async (req, res) => {
+  try {
+    if (req.body.name) {
+      const user = await User.find({ name: req.body.name });
+
+      if (!user) {
+        res.status(404).json({ msg: 'No user found' });
+      }
+
+      res.status(200).json(user);
+    } else {
+      const users = await User.find();
+
+      if (!users) {
+        res.status(404).json({ msg: 'No users found' });
+      }
+
+      res.status(200).json(users);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route     POST api/users
 // @desc      Register user
 // @acces     Private
@@ -128,6 +156,19 @@ router.post('/memberships', authDesk, async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
+  }
+});
+
+// @route     PUT api/users/:id
+// @desc      Update expired user
+// @acces     Private
+router.put('/:id', authDesk, async (req, res) => {
+  try {
+    await User.findOneAndUpdate({ _id: req.params.id }, { $set: req.body });
+    res.status(200).json({ msg: 'Success' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 });
 

@@ -48,6 +48,10 @@ const UserSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
+  check_in: {
+    type: Array,
+    default: [],
+  },
 });
 
 module.exports = mongoose.model('user', UserSchema);
