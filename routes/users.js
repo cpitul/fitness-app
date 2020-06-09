@@ -7,13 +7,32 @@ const authDesk = require('../middlewares/authDesk');
 
 const User = require('../models/User');
 
-// @route     GET api/users
-// @desc      Get all users or get a specific user
+// @route     GET api/users/:id
+// @desc     Get user by id
+// @access     Private
+router.get('/:id', authDesk, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).send('No user found');
+  }
+});
+
+// @route     POST api/users
+// @desc      Get all users or get search user
 // @acces     Private
-router.get('/', authDesk, async (req, res) => {
+router.post('/', authDesk, async (req, res) => {
   try {
     if (req.body.name) {
-      const user = await User.find({ name: req.body.name });
+      const user = await User.find({
+        $text: {
+          $search: req.body.name,
+          $caseSensitive: false,
+          $diacriticSensitive: false,
+        },
+      });
 
       if (!user) {
         res.status(404).json({ msg: 'No user found' });
@@ -21,7 +40,7 @@ router.get('/', authDesk, async (req, res) => {
 
       res.status(200).json(user);
     } else {
-      const users = await User.find();
+      const users = await User.find({ type: { $nin: ['admin', 'desk'] } });
 
       if (!users) {
         res.status(404).json({ msg: 'No users found' });
@@ -160,7 +179,7 @@ router.post('/memberships', authDesk, async (req, res) => {
 });
 
 // @route     PUT api/users/:id
-// @desc      Update expired user
+// @desc      Update user
 // @acces     Private
 router.put('/:id', authDesk, async (req, res) => {
   try {

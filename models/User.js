@@ -40,7 +40,7 @@ const UserSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
-  panalties: {
+  penalties: {
     type: Number,
     default: 0,
   },

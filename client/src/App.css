@@ -8,3 +8,7 @@
 .alert {
   color: red;
 }
+
+#search-button {
+  display: none;
+}

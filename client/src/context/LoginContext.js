@@ -3,7 +3,7 @@ import React, { createContext, useState } from 'react';
 
 export const LoginContext = createContext();
 
-export const LoginState = ({ children }) => {
+const LoginState = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [activeUser, setActiveUser] = useState({});
   const [loading, setLoading] = useState(true);
@@ -72,3 +72,5 @@ export const LoginState = ({ children }) => {
     </LoginContext.Provider>
   );
 };
+
+export default LoginState;
