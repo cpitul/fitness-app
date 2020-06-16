@@ -5,6 +5,23 @@ export const GlobalContext = createContext();
 
 const GlobalState = ({ children }) => {
   const [searchResult, setSearchResult] = useState([]);
+
+  const getClass = async (classId) => {
+    try {
+      const res = await axios({
+        method: 'get',
+        url: `/api/classes/${classId}`,
+        headers: {
+          'auth-token': localStorage.getItem('token'),
+        },
+      });
+
+      return res.data;
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   const searchDB = async (input) => {
     const token = localStorage.getItem('token');
 
@@ -26,7 +43,7 @@ const GlobalState = ({ children }) => {
   };
 
   return (
-    <GlobalContext.Provider value={{ searchDB, searchResult }}>
+    <GlobalContext.Provider value={{ searchDB, getClass, searchResult }}>
       {children}
     </GlobalContext.Provider>
   );

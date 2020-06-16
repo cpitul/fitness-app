@@ -1,3 +1,4 @@
+import Axios from 'axios';
 import React, { useContext, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
@@ -16,6 +17,13 @@ const LoginPage = ({ history }) => {
 
     if (isLogged) {
       history.push('/');
+      Axios({
+        method: 'post',
+        url: '/api/users/memberships',
+        headers: {
+          'auth-token': token,
+        },
+      });
     }
 
     if (token) {

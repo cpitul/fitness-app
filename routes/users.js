@@ -146,7 +146,7 @@ router.post('/memberships', authDesk, async (req, res) => {
     memberships.map(async (membership) => {
       const date = new Date();
       const expires = new Date(membership.membership_expires);
-      const dif = expires.getUTCMonth() - (date.getUTCMonth() - 1);
+      const dif = expires.getMonth() - date.getMonth();
 
       if (dif < 0) {
         // Membership is expired
@@ -159,7 +159,7 @@ router.post('/memberships', authDesk, async (req, res) => {
         });
       } else if (dif === 0) {
         // Test if there are days left of membership
-        if (expires.getUTCDate() - date.getUTCDate() < 0) {
+        if (expires.getDate() - date.getDate() < 0) {
           // No days left in the membership
           await membership.updateOne({
             $set: {

@@ -40,7 +40,7 @@ const User = ({ user }) => {
         reset={() => setUpdate(!update)}
       />
       <Services reset={() => setUpdate(!update)} id={_id} services={services} />
-      <Enrolled enrolled={enrolled} />
+      <Enrolled userId={_id} enrolled={enrolled} />
     </div>
   );
 };

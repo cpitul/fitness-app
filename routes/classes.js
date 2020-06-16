@@ -140,55 +140,69 @@ router.put('/:id', auth, async (req, res) => {
             try {
               const user = await User.findById({ _id: req.body.id });
 
-              // check if user is already enrolled
-              if (classToEdit.enrolled.some((id) => id === req.body.id)) {
-                const date = new Date();
-                const classTime = new Date(
-                  `${classToEdit.date} ${classToEdit.time}`
-                );
-                // check if the request is made at hours - 1 from the start of the class
+              if (req.body.attended) {
                 if (
-                  classTime.getHours - 1 === date.getHours() &&
-                  classTime.getDate() === date.getDate()
+                  !classToEdit.attended.some((id) => id === req.body.attended)
                 ) {
-                  // check minutes
-                  if (classTime.getMinutes() - date.getMinutes() === 0) {
-                    res.status(403).json({ msg: `1 hour left until start` });
-                  } else {
-                    // remove user from class
-                    classToEdit.enrolled = classToEdit.enrolled.filter(
-                      (id) => id !== req.body.id
-                    );
+                  classToEdit.attended.unshift(req.body.attended);
+                  user.enrolled = user.enrolled.filter(
+                    (id) => id === classToEdit._id
+                  );
 
-                    // remove the class from the user's enrolled list
-                    user.enrolled = user.enrolled.filter(
-                      (id) => id !== req.params.id
-                    );
-
-                    // increment the number of give ups to that class
-                    classToEdit.giveups++;
-                  }
+                  await classToEdit.save();
+                  await user.save();
                 }
-                // test if the class is full and reject if it is
-              } else if (classToEdit.enrolled.length === classToEdit.max) {
-                res.status(403).json({ msg: 'Class is full' });
-                break;
               } else {
-                const date = new Date();
-                const classDate = new Date(
-                  `${classToEdit.date} ${classToEdit.time}`
-                );
-                // test if there is a maximum of two days difference
-                // between date of the class and date of the request
-                if (classDate.getDate() - date.getDate() <= 2) {
-                  // add user to class
-                  classToEdit.enrolled.unshift(req.user.id);
-                  // add class to user's enrolled list
-                  user.enrolled.unshift(req.params.id);
+                // check if user is already enrolled
+                if (classToEdit.enrolled.some((id) => id === req.body.id)) {
+                  const date = new Date();
+                  const classTime = new Date(
+                    `${classToEdit.date} ${classToEdit.time}`
+                  );
+                  // check if the request is made at hours - 1 from the start of the class
+                  if (
+                    classTime.getHours - 1 === date.getHours() &&
+                    classTime.getDate() === date.getDate()
+                  ) {
+                    // check minutes
+                    if (classTime.getMinutes() - date.getMinutes() === 0) {
+                      res.status(403).json({ msg: `1 hour left until start` });
+                    } else {
+                      // remove user from class
+                      classToEdit.enrolled = classToEdit.enrolled.filter(
+                        (id) => id !== req.body.id
+                      );
+
+                      // remove the class from the user's enrolled list
+                      user.enrolled = user.enrolled.filter(
+                        (id) => id !== req.params.id
+                      );
+
+                      // increment the number of give ups to that class
+                      classToEdit.giveups++;
+                    }
+                  }
+                  // test if the class is full and reject if it is
+                } else if (classToEdit.enrolled.length === classToEdit.max) {
+                  res.status(403).json({ msg: 'Class is full' });
+                  break;
                 } else {
-                  res.status(403).json({
-                    msg: 'You can only enroll to class two days in advanced',
-                  });
+                  const date = new Date();
+                  const classDate = new Date(
+                    `${classToEdit.date} ${classToEdit.time}`
+                  );
+                  // test if there is a maximum of two days difference
+                  // between date of the class and date of the request
+                  if (classDate.getDate() - date.getDate() <= 2) {
+                    // add user to class
+                    classToEdit.enrolled.unshift(req.user.id);
+                    // add class to user's enrolled list
+                    user.enrolled.unshift(req.params.id);
+                  } else {
+                    res.status(403).json({
+                      msg: 'You can only enroll to class two days in advanced',
+                    });
+                  }
                 }
               }
 
@@ -243,13 +257,27 @@ router.put('/:id', auth, async (req, res) => {
                   }
                 }
               } else {
-                // make the update
-                try {
-                  await classToEdit.updateOne({ $set: req.body });
-                  res.status(200).json({ msg: 'Success' });
-                } catch (err) {
-                  console.error(err.message);
-                  res.status(500).send('Server Error');
+                if (req.body.attended) {
+                  if (
+                    !classToEdit.attended.some((id) => id === req.body.attended)
+                  ) {
+                    classToEdit.attended.unshift(req.body.attended);
+                    user.enrolled = user.enrolled.filter(
+                      (id) => id !== classToEdit._id
+                    );
+
+                    await user.save();
+                    await classToEdit.save();
+                  }
+                } else {
+                  // make the update
+                  try {
+                    await classToEdit.updateOne({ $set: req.body });
+                    res.status(200).json({ msg: 'Success' });
+                  } catch (err) {
+                    console.error(err.message);
+                    res.status(500).send('Server Error');
+                  }
                 }
               }
 
