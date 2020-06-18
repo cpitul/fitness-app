@@ -26,7 +26,7 @@ const GlobalState = ({ children }) => {
     const token = localStorage.getItem('token');
 
     const res = await axios({
-      method: 'POST',
+      method: 'GET',
       url: '/api/users',
       data: {
         name: input,

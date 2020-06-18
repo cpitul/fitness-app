@@ -139,15 +139,25 @@ router.put('/:id', auth, async (req, res) => {
           case 'desk':
             try {
               const user = await User.findById({ _id: req.body.id });
+              const date = new Date();
 
               if (req.body.attended) {
                 if (
                   !classToEdit.attended.some((id) => id === req.body.attended)
                 ) {
-                  classToEdit.attended.unshift(req.body.attended);
+                  const check_in = `${
+                    user.name
+                  } checked in on ${date.getDate()}.${
+                    date.getMonth() + 1
+                  }.${date.getFullYear()} for ${classToEdit.title}`;
+
+                  user.check_in.unshift(check_in);
+
                   user.enrolled = user.enrolled.filter(
                     (id) => id === classToEdit._id
                   );
+
+                  classToEdit.attended.unshift(req.body.attended);
 
                   await classToEdit.save();
                   await user.save();
@@ -155,7 +165,6 @@ router.put('/:id', auth, async (req, res) => {
               } else {
                 // check if user is already enrolled
                 if (classToEdit.enrolled.some((id) => id === req.body.id)) {
-                  const date = new Date();
                   const classTime = new Date(
                     `${classToEdit.date} ${classToEdit.time}`
                   );
@@ -261,10 +270,17 @@ router.put('/:id', auth, async (req, res) => {
                   if (
                     !classToEdit.attended.some((id) => id === req.body.attended)
                   ) {
-                    classToEdit.attended.unshift(req.body.attended);
+                    const check_in = `${
+                      user.name
+                    } checked in on ${date.getDate()}.${
+                      date.getMonth() + 1
+                    }.${date.getFullYear()} for ${classToEdit.title}`;
+
+                    user.check_in.unshift(check_in);
                     user.enrolled = user.enrolled.filter(
                       (id) => id !== classToEdit._id
                     );
+                    classToEdit.attended.unshift(req.body.attended);
 
                     await user.save();
                     await classToEdit.save();

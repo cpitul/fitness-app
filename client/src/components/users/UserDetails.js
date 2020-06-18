@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import Activity from './Activity';
 import Enrolled from './Enrolled';
 import Membership from './Membership';
 import Services from './Services';
 
 const User = ({ user }) => {
   const [update, setUpdate] = useState(false);
+  const [show, setShow] = useState({
+    activity: false,
+  });
 
   const {
     _id,
@@ -16,11 +20,13 @@ const User = ({ user }) => {
     services,
     penalties,
     enrolled,
+    check_in,
     date_created,
     type,
   } = user;
 
   const joined = new Date(date_created);
+  const { activity } = show;
 
   return (
     <div className='user-details'>
@@ -40,7 +46,13 @@ const User = ({ user }) => {
         reset={() => setUpdate(!update)}
       />
       <Services reset={() => setUpdate(!update)} id={_id} services={services} />
-      <Enrolled userId={_id} enrolled={enrolled} />
+      {enrolled.length > 0 && <Enrolled userId={_id} enrolled={enrolled} />}
+      <input
+        type='button'
+        value='See Activity'
+        onClick={() => setShow({ ...show, activity: !activity })}
+      />
+      {activity && <Activity check_in={check_in} />}
     </div>
   );
 };

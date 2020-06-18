@@ -110,7 +110,6 @@ const Membership = ({ membership_created, membership_expires, id, reset }) => {
             {new_expire_date.getMonth() + 1}-{new_expire_date.getFullYear()}
           </p>
         )}
-
         {showCal && (
           <Calendar
             className='react-calendar'
@@ -118,7 +117,6 @@ const Membership = ({ membership_created, membership_expires, id, reset }) => {
             value={new_expire_date}
           />
         )}
-
         {showCal && (
           <input
             onClick={() =>

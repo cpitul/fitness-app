@@ -20,10 +20,10 @@ router.get('/:id', authDesk, async (req, res) => {
   }
 });
 
-// @route     POST api/users
+// @route     GET api/users
 // @desc      Get all users or get search user
 // @acces     Private
-router.post('/', authDesk, async (req, res) => {
+router.get('/', authDesk, async (req, res) => {
   try {
     if (req.body.name) {
       const user = await User.find({
@@ -62,10 +62,6 @@ router.post(
   [
     check('name', 'Please enter your name').not().isEmpty(),
     check('email', 'Please enter a valid email address').isEmail(),
-    check(
-      'password',
-      'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 }),
     authDesk,
   ],
   async (req, res) => {
@@ -80,10 +76,9 @@ router.post(
       email,
       password,
       phone,
-      type,
-      date_created,
       membership_created,
       membership_expires,
+      services,
     } = req.body;
 
     try {
@@ -95,12 +90,12 @@ router.post(
       const user = new User({
         name,
         email,
-        password,
         phone,
-        type,
-        date_created,
+        password,
+        type: 'paid',
         membership_created,
         membership_expires,
+        services,
       });
 
       // Encrypt password
@@ -123,7 +118,7 @@ router.post(
 
       jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ user });
       });
     } catch (err) {
       console.error(err.message);
