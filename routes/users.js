@@ -166,6 +166,7 @@ router.post('/memberships', authDesk, async (req, res) => {
         }
       }
     });
+
     res.status(200).send('Success');
   } catch (err) {
     console.error(err.message);

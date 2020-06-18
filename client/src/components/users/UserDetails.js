@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Activity from './Activity';
+import CheckIn from './CheckIn';
 import Enrolled from './Enrolled';
 import Membership from './Membership';
 import Services from './Services';
@@ -38,7 +39,7 @@ const User = ({ user }) => {
       <h5>Email: {email}</h5>
       <h5>Phone: {phone}</h5>
       <h5>Penalties: {penalties}</h5>
-
+      <CheckIn user={user}/>
       <Membership
         id={_id}
         membership_created={membership_created}
