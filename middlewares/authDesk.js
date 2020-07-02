@@ -14,8 +14,6 @@ module.exports = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (decoded.user.type === 'admin' || decoded.user.type === 'desk') {
       next();
-    } else {
-      res.status(401).json({ msg: 'Token is invalid' });
     }
   } catch (err) {
     res.status(401).json({ msg: 'Token is invalid' });

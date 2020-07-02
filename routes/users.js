@@ -23,7 +23,7 @@ router.get('/:id', authDesk, async (req, res) => {
 // @route     GET api/users
 // @desc      Get all users or get search user
 // @acces     Private
-router.get('/', authDesk, async (req, res) => {
+router.put('/', authDesk, async (req, res) => {
   try {
     if (req.body.name) {
       const user = await User.find({
@@ -33,8 +33,7 @@ router.get('/', authDesk, async (req, res) => {
           $diacriticSensitive: false,
         },
       });
-
-      if (!user) {
+      if (user.length === 0) {
         res.status(404).json({ msg: 'No user found' });
       }
 
@@ -132,11 +131,28 @@ router.post(
 // @acces     Private
 router.post('/memberships', authDesk, async (req, res) => {
   try {
-    const users = await User.find().select('membership_expires').select('type');
+    const users = await User.find()
+      .select('membership_expires')
+      .select('type')
+      .select('services');
 
     const memberships = users.filter((user) => user.membership_expires);
+    const usersWithServices = users.filter((user) => user.services);
 
-    if (!memberships) return res.status(404).send('No memberships active');
+    if (!memberships && !usersWithServices)
+      return res.status(404).send('No memberships and no user services active');
+
+    usersWithServices.map(async (userWithServices) => {
+      if (userWithServices.services.length > 0) {
+        const updatedServices = userWithServices.services.filter(
+          (service) => parseInt(service.tokens) !== 0
+        );
+
+        await userWithServices.updateOne({
+          $set: { services: updatedServices },
+        });
+      }
+    });
 
     memberships.map(async (membership) => {
       const date = new Date();

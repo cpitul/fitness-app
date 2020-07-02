@@ -26,19 +26,18 @@ const GlobalState = ({ children }) => {
     const token = localStorage.getItem('token');
 
     const res = await axios({
-      method: 'GET',
+      method: 'put',
       url: '/api/users',
+      headers: {
+        'auth-token': token,
+      },
       data: {
         name: input,
-      },
-      headers: {
-        'Content-Type': 'application/json',
-        'auth-token': token,
       },
     });
 
     res.status === 404 || res.status === 500
-      ? setSearchResult(res.data)
+      ? setSearchResult(null)
       : setSearchResult(res.data);
   };
 

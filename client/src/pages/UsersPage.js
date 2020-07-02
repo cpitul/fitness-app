@@ -13,7 +13,7 @@ const Users = () => {
   useEffect(() => {
     const getUsers = async () => {
       const res = await Axios({
-        method: 'GET',
+        method: 'put',
         url: '/api/users',
         headers: {
           'auth-token': localStorage.getItem('token'),
