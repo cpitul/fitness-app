@@ -1,5 +1,5 @@
-import axios from 'axios';
-import React, { createContext, useState } from 'react';
+import axios from "axios";
+import React, { createContext, useState } from "react";
 
 export const LoginContext = createContext();
 
@@ -17,13 +17,13 @@ const LoginState = ({ children }) => {
   const getLoggedUser = async (token) => {
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        'auth-token': token,
+        "Content-Type": "application/json",
+        "auth-token": token,
       },
     };
     try {
-      const user = await axios.get('/api/login', config);
-      setActiveUser(user);
+      const user = await axios.get("/api/login", config);
+      setActiveUser(user.data);
       setIsLogged(true);
     } catch (err) {
       console.error(err.message);
@@ -34,14 +34,14 @@ const LoginState = ({ children }) => {
     try {
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
 
-      const res = await axios.post('/api/login', user, config);
+      const res = await axios.post("/api/login", user, config);
 
       setIsLogged(true);
-      localStorage.setItem('token', res.data.token);
+      localStorage.setItem("token", res.data.token);
     } catch (err) {
       console.error(err.message);
       return err;
@@ -49,7 +49,7 @@ const LoginState = ({ children }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setIsLogged(false);
     setActiveUser({});
   };

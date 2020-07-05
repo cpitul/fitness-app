@@ -22,6 +22,8 @@ const GlobalState = ({ children }) => {
     }
   };
 
+  const clearSearchResult = () => setSearchResult([]);
+
   const searchDB = async (input) => {
     const token = localStorage.getItem('token');
 
@@ -42,7 +44,9 @@ const GlobalState = ({ children }) => {
   };
 
   return (
-    <GlobalContext.Provider value={{ searchDB, getClass, searchResult }}>
+    <GlobalContext.Provider
+      value={{ searchDB, getClass, clearSearchResult, searchResult }}
+    >
       {children}
     </GlobalContext.Provider>
   );

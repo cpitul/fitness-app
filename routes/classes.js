@@ -267,6 +267,9 @@ router.put('/:id', auth, async (req, res) => {
                 }
               } else {
                 if (req.body.attended) {
+                  const user = await User.findById({ _id: req.body.id });
+                  const date = new Date();
+
                   if (
                     !classToEdit.attended.some((id) => id === req.body.attended)
                   ) {
@@ -274,13 +277,25 @@ router.put('/:id', auth, async (req, res) => {
                       user.name
                     } checked in on ${date.getDate()}.${
                       date.getMonth() + 1
-                    }.${date.getFullYear()} for ${classToEdit.title}`;
+                    }.${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()} for ${
+                      classToEdit.title
+                    }`;
 
                     user.check_in.unshift(check_in);
+
+                    console.log(user.enrolled);
+
                     user.enrolled = user.enrolled.filter(
-                      (id) => id !== classToEdit._id
+                      (id) => id === classToEdit._id
                     );
+
+                    console.log(user.enrolled);
+
                     classToEdit.attended.unshift(req.body.attended);
+
+                    classToEdit.enrolled = classToEdit.enrolled.filter(
+                      (id) => id === user._id
+                    );
 
                     await user.save();
                     await classToEdit.save();

@@ -30,7 +30,7 @@ const EnrolledItem = ({ classId, userId }) => {
           <h5>{item.title}</h5>
           <p>{item.time}</p>
           <p>
-            {when.getDate()}-{when.getMonth()}-{when.getFullYear()}
+            {when.getDate()}-{when.getMonth() + 1}-{when.getFullYear()}
           </p>
           <h4>{item.trainer}</h4>
           <h5>

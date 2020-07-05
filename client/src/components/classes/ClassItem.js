@@ -3,6 +3,7 @@ import ClassDetails from './ClassDetails';
 
 const ClassItem = ({ classItem }) => {
   const [showDetails, setShowDetails] = useState(false);
+
   const { title, trainer, enrolled, max, time } = classItem;
 
   return (
