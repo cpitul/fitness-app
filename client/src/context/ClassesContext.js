@@ -15,9 +15,23 @@ const reducer = (state, action) => {
           date.getMonth() === new Date(clss.date).getMonth() &&
           date.getFullYear() === new Date(clss.date).getFullYear()
       );
+      todayClasses.sort((a, b) => {
+        const time1 = a.time
+          .split(':')
+          .reduce((acc, curr) => parseInt(acc) + parseInt(curr));
+        const time2 = b.time
+          .split(':')
+          .reduce((acc, curr) => parseInt(acc) + parseInt(curr));
+        return time1 - time2;
+      });
       return { ...state, todayClasses, loading: false };
     case 'CHANGE_DATE':
       return { ...state, date: new Date(action.payload) };
+    case 'CHANGE_COMMING_NEXT':
+      return { ...state, commingNext: action.payload };
+    case 'CHANGE_IN_PROGRESS':
+      return { ...state, inProgress: action.payload };
+
     default:
       return state;
   }
@@ -29,6 +43,8 @@ const ClassesState = ({ children }) => {
     classes: [],
     todayClasses: [],
     date: new Date(),
+    inProgress: [],
+    commingNext: [],
   };
 
   const [state, dispatch] = useReducer(reducer, initState);
@@ -51,9 +67,22 @@ const ClassesState = ({ children }) => {
     dispatch({ type: 'SET_CLASSES', payload: res.data });
   };
 
+  const changeInProgress = (input) =>
+    dispatch({ type: 'CHANGE_IN_PROGRESS', payload: input });
+
+  const changeCommingNext = (input) =>
+    dispatch({ type: 'CHANGE_COMMING_NEXT', payload: input });
+
   return (
     <ClassesContext.Provider
-      value={{ state, getClasses, filterTodayClasses, changeDate }}
+      value={{
+        state,
+        getClasses,
+        filterTodayClasses,
+        changeDate,
+        changeCommingNext,
+        changeInProgress,
+      }}
     >
       {children}
     </ClassesContext.Provider>
